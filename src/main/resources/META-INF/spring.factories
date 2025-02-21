@@ -1,0 +1,3 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+io.github.ardonplay.springbootheaderuserinfostarter.config.WebConfig,\
+io.github.ardonplay.springbootheaderuserinfostarter.config.WebFluxConfig
