@@ -48,6 +48,7 @@ jreleaser {
                 sourceJar = true
                 javadocJar = true
                 namespace = "io.github.ardonplay"
+                retryDelay = 60
             }
         } as Closure<Void>))
     }
