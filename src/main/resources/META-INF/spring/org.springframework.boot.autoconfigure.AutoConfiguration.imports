@@ -1,2 +1,4 @@
 io.github.ardonplay.springbootheaderuserinfostarter.config.WebConfig
 io.github.ardonplay.springbootheaderuserinfostarter.config.WebFluxConfig
+io.github.ardonplay.springbootheaderuserinfostarter.config.OpenApiConfig
+io.github.ardonplay.springbootheaderuserinfostarter.filter.ServerWebExchangeContextFilter

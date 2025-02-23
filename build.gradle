@@ -1,12 +1,15 @@
+import org.jreleaser.model.Active
 plugins {
     id 'java'
     id 'org.springframework.boot' version '3.4.3'
     id 'io.spring.dependency-management' version '1.1.7'
     id 'maven-publish'
+    id("org.jreleaser") version "1.16.0"
 }
 
 group = 'io.github.ardonplay'
-version = '0.0.1-SNAPSHOT'
+version = '0.0.2'
+description = "Starter for extracting user info from request headers"
 
 java {
     toolchain {
@@ -14,18 +17,89 @@ java {
     }
 }
 
+
+jreleaser {
+
+    project {
+        inceptionYear = "2025"
+        author("ardonplay")
+    }
+
+    release {
+        github(({
+            skipRelease = true
+            skipTag = true
+        } as Closure<Void>))
+    }
+
+    signing(({
+        active = Active.ALWAYS
+        armored = true
+        verify = true
+    } as Closure<Void>))
+
+    deploy {
+        maven(({
+            mavenCentral.create("sonatype") {
+                active = Active.ALWAYS
+                url = "https://central.sonatype.com/api/v1/publisher"
+                stagingRepository(layout.buildDirectory.dir("staging-deploy").get().toString())
+                setAuthorization("Basic")
+                sourceJar = true
+                javadocJar = true
+                namespace = "io.github.ardonplay"
+            }
+        } as Closure<Void>))
+    }
+}
+
 publishing {
     publications {
-        mavenJava(MavenPublication) {
+        release(MavenPublication) {
             from components.java
 
-            groupId = 'io.github.ardonplay'
-            artifactId = 'springboot-header-userinfo-starter'
-            version = '0.0.1-SNAPSHOT'
+            groupId = project.group
+            artifactId = "spring-boot-header-userinfo-starter"
+
+            pom {
+                name.set("io.github.ardonplay.spring-boot-header-userinfo-starter")
+                description.set(project.description)
+                url.set("https://github.com/ardonplay/spring-boot-header-userinfo-starter")
+
+                issueManagement {
+                    url.set("https://github.com/ardonplay/spring-boot-header-user-info-starterr/issues")
+                }
+
+                scm {
+                    url.set("https://github.com/ardonplay/spring-boot-header-user-info-starter")
+                    connection.set("scm:git://github.com/ardonplay/spring-boot-header-userinfo-starter.git")
+                    developerConnection.set("scm:git://github.com/ardonplay/spring-boot-header-userinfo-starter.git")
+                }
+
+                licenses {
+                    license {
+                        name.set("The MIT License")
+                        url.set("https://opensource.org/licenses/MIT")
+                        distribution.set("repo")
+                    }
+                }
+
+
+                developers {
+                    developer {
+                        id.set("ardonplay")
+                        name.set("Moshchuk Vladimir")
+                        email.set("ardonplay@gmail.com")
+                        url.set("https://github.com/ardonplay")
+                    }
+                }
+            }
         }
     }
     repositories {
-        mavenLocal()  // <-- Указываем локальный репозиторий
+        maven {
+            setUrl(layout.buildDirectory.dir("staging-deploy"))
+        }
     }
 }
 
@@ -43,12 +117,13 @@ repositories {
 dependencies {
     compileOnly 'org.springframework.boot:spring-boot-starter-web'
     compileOnly 'org.springframework.boot:spring-boot-starter-webflux'
+    implementation "org.springdoc:springdoc-openapi-starter-webflux-ui:2.4.0"
+    implementation "org.springdoc:springdoc-openapi-starter-webflux-api:2.4.0"
+
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
-tasks.named('test') {
-    useJUnitPlatform()
-}
+
